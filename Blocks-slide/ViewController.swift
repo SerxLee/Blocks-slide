@@ -17,8 +17,11 @@ import Foundation
 
 class ViewController: UIViewController, UIGestureRecognizerDelegate {
     
-    var doubleArrayBoolBlocks = DoubleDimensionalArrayBool(rows: 10, columns: 10)
-    var doubleArrayPointBlocks = DoubleDimensionalArrayPoint(rows: 10, columns: 10)
+    var doubleArrayNumberBlcoks = DoubleDimensionalArrayInt(rows: 100, columns: 100)
+    var doubleArrayBoolBlocks = DoubleDimensionalArrayBool(rows: 100, columns: 100)
+    var doubleArrayPointBlocks = DoubleDimensionalArrayPoint(rows: 100, columns: 100)
+    
+    var Blocks: [UIView]!
     
     //the second view size
     var grayView: UIView!
@@ -32,17 +35,18 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     var blockLenght: CGFloat!
 
     
-    let tapRecognizer = UITapGestureRecognizer()
-    let panRecognizer = UIPanGestureRecognizer()
-    
     //swipe every direction
     var swipeUp = UISwipeGestureRecognizer()
     var swipeDown = UISwipeGestureRecognizer()
     var swipeRight = UISwipeGestureRecognizer()
     var swipeLeft = UISwipeGestureRecognizer()
     
+    
+    //test
+    var firstBlockX: Int!
+    var firstBlockY: Int!
 
-        
+    
 /*
     all the position of the blocks,
     according to the 5.5' screen iPhone6 Plus.
@@ -95,12 +99,12 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         325.0, 325.0
 */
     func allBlocksPoint(){
-        for index_j in 0...5{
-            for index_i in 0...5{
+        for index_j in 0...6{
+            for index_i in 0...6{
                 doubleArrayPointBlocks[index_i, index_j] = CGPoint(x: grayViewLenght / 6 * CGFloat(index_i), y: grayViewHeight / 6 * CGFloat(index_j))
-                print("\(grayViewLenght / 6 * CGFloat(index_i)), \(grayViewHeight / 6 * CGFloat(index_j))")
+//                print("\(grayViewLenght / 6 * CGFloat(index_i)), \(grayViewHeight / 6 * CGFloat(index_j))")
             }
-            print("\n")
+//            print("\n")
         }
         
     }
@@ -132,7 +136,8 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         
         isThereA_Block()
         
-        createBlocksToMove(6)
+        createBlocksToMove(1)
+//        print(Blocks.count)
 
         
         //call the method: set gesture recognizer attribute
@@ -162,17 +167,23 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     
     
     func createBlocksToMove(num: Int){
-        
+        var numOfBlocks: Int = 0
         for index_i in 0...5{
             for index_j in 0...5{
                 
                 //if the position of the matrix has a block, create a blocks in the position
                 if doubleArrayBoolBlocks[index_i, index_j]{
-                    
+
                     let view2 = UIView(frame: CGRect(origin: doubleArrayPointBlocks[index_i, index_j], size: sizeOfBlocks))
                     view2.backgroundColor = UIColor.whiteColor()
+                    view2.tag = numOfBlocks + 1
                     
+                    //append the block into Blocks, add use the doubleArrayNumberBlcoks to mark blocks' number(numOfBlocks).
+                    
+                    doubleArrayNumberBlcoks[index_i, index_j] = numOfBlocks + 1
+    
                     grayView.addSubview(view2)
+                    numOfBlocks++
                 }
             }
         }
@@ -228,16 +239,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     //TODO: gesture recognizer's attribute
     func setGestureAttribute(){
         
-        //The number of taps required to match
-        tapRecognizer.numberOfTapsRequired = 1
-        //The number of fingers required to match
-        tapRecognizer.numberOfTouchesRequired = 1
-        
         // default is (2) the number of fingers that must swipe
-        swipeUp.numberOfTouchesRequired = 2
-        swipeDown.numberOfTouchesRequired = 2
-        swipeLeft.numberOfTouchesRequired = 2
-        swipeRight.numberOfTouchesRequired = 2
         
         swipeUp = UISwipeGestureRecognizer(target: self, action: Selector("swipe:"))
         swipeDown = UISwipeGestureRecognizer(target: self, action: Selector("swipe:"))
@@ -247,7 +249,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         swipeUp.direction = UISwipeGestureRecognizerDirection.Up
         swipeDown.direction = UISwipeGestureRecognizerDirection.Down
         swipeLeft.direction = UISwipeGestureRecognizerDirection.Left
-        swipeLeft.direction = UISwipeGestureRecognizerDirection.Right
+        swipeRight.direction = UISwipeGestureRecognizerDirection.Right
         
         self.grayView.addGestureRecognizer(swipeUp)
         self.grayView.addGestureRecognizer(swipeDown)
@@ -255,39 +257,117 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         self.grayView.addGestureRecognizer(swipeRight)
     }
     
+    
     //swipe to move the blocks
     func swipe(recognizer: UISwipeGestureRecognizer){
         
-        
-        
-        if recognizer.direction == UISwipeGestureRecognizerDirection.Up{
+        var selectBlock: UIView
+
+        if recognizer == swipeUp{
             
-        }else if recognizer.direction == UISwipeGestureRecognizerDirection.Down{
-        
-        }else if recognizer.direction == UISwipeGestureRecognizerDirection.Right{
-        
-        }else{
-        
+            selectBlock = judgeBlocksToMove(swipeUp)
+
+            if firstBlockY > 0 && !doubleArrayBoolBlocks[firstBlockX, firstBlockY - 1]{
+                doubleArrayBoolBlocks[firstBlockX, firstBlockY] = false
+                doubleArrayNumberBlcoks[firstBlockX, firstBlockY] = 0
+                
+                selectBlock.frame.origin.y = selectBlock.frame.origin.y - blockLenght
+                doubleArrayBoolBlocks[firstBlockX, firstBlockY - 1] = true
+                doubleArrayNumberBlcoks[firstBlockX, firstBlockY - 1] = selectBlock.tag
+                print("the \(selectBlock.tag)th move to up")
+
+            }
+            
+        }else if recognizer == swipeDown{
+
+            selectBlock = judgeBlocksToMove(swipeDown)
+            if firstBlockY < 5 && !doubleArrayBoolBlocks[firstBlockX, firstBlockY + 1]{
+                doubleArrayBoolBlocks[firstBlockX, firstBlockY] = false
+                doubleArrayNumberBlcoks[firstBlockX, firstBlockY] = 0
+                
+                selectBlock.frame.origin.y = selectBlock.frame.origin.y + blockLenght
+                doubleArrayBoolBlocks[firstBlockX, firstBlockY + 1] = true
+                doubleArrayNumberBlcoks[firstBlockX, firstBlockY + 1] = selectBlock.tag
+                print("the \(selectBlock.tag)th move to down")
+
+            }
+            
+        }else if recognizer == swipeRight{
+            
+            selectBlock = judgeBlocksToMove(swipeRight)
+            if firstBlockX < 5 && !doubleArrayBoolBlocks[firstBlockX + 1, firstBlockY]{
+                
+                doubleArrayBoolBlocks[firstBlockX, firstBlockY] = false
+                doubleArrayNumberBlcoks[firstBlockX, firstBlockY] = 0
+
+                selectBlock.frame.origin.x = selectBlock.frame.origin.x + blockLenght
+                doubleArrayBoolBlocks[firstBlockX + 1, firstBlockY] = true
+                doubleArrayNumberBlcoks[firstBlockX + 1, firstBlockY] = selectBlock.tag
+                print("the \(selectBlock.tag)th move to right")
+            }
+        }else if recognizer == swipeLeft{
+
+            selectBlock = judgeBlocksToMove(swipeLeft)
+            if firstBlockX > 0 && !doubleArrayBoolBlocks[firstBlockX - 1, firstBlockY]{
+                doubleArrayBoolBlocks[firstBlockX, firstBlockY] = false
+                doubleArrayNumberBlcoks[firstBlockX, firstBlockY] = 0
+                selectBlock.frame.origin.x = selectBlock.frame.origin.x - blockLenght
+                
+                doubleArrayBoolBlocks[firstBlockX - 1, firstBlockY] = true
+                doubleArrayNumberBlcoks[firstBlockX - 1, firstBlockY] = selectBlock.tag
+                print("the \(selectBlock.tag)th move to left")
+
+            }
         }
         
     }
     
+    
     //judge the block which you want to move, 2 blocks together
     func judgeBlocksToMove(recognizer: UISwipeGestureRecognizer) -> UIView{
         
-        var firstBlcok: UIView!
+        let firstBlcok: UIView = UIView()
+
         
         let swipeStartPoint = recognizer.locationInView(self.grayView)
         let sx = swipeStartPoint.x
         let sy = swipeStartPoint.y
         
+//        for index_i in 0...5{
+//            for index_j in 0...5{
+//                let contrastStart = doubleArrayPointBlocks[index_i, index_j]
+//                let contrastEnd = doubleArrayPointBlocks[index_i + 1, index_j + 1]
+//            }
+//        }
+        for index_i in 0...5{
+            for index_j in 0...5{
+                
+                if doubleArrayBoolBlocks[index_i, index_j]{
+                    
+                    let contrastStart = doubleArrayPointBlocks[index_i, index_j]
+                    let contrastEnd = doubleArrayPointBlocks[index_i + 1, index_j + 1]
+                    
+                    if sx >= contrastStart.x && sx <= contrastEnd.x && sy >= contrastStart.y && sy <= contrastEnd.y{
+                        
+                        firstBlockX = index_i
+                        firstBlockY = index_j
+                        break
+                    }
+                }
+            }
+        }
         
+//        firstBlcok = Blocks[doubleArrayNumberBlcoks[firstBlockX, firstBlockY]]
         
-        //MARK: test the start point
-        print(swipeStartPoint.x)
-        print(swipeStartPoint.y)
+        //check all blcoks' tag, if it is equal the doubleArrayNumberBlcoks' value, return current block
+        for limView in grayView.subviews{
+            if limView.tag == doubleArrayNumberBlcoks[firstBlockX, firstBlockY]{
+                return limView
+            }
+        }
 
         return firstBlcok
     }
+
 }
 
