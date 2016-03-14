@@ -20,8 +20,9 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     var doubleArrayNumberBlcoks = DoubleDimensionalArrayInt(rows: 100, columns: 100)
     var doubleArrayBoolBlocks = DoubleDimensionalArrayBool(rows: 100, columns: 100)
     var doubleArrayPointBlocks = DoubleDimensionalArrayPoint(rows: 100, columns: 100)
+    var doubleArrayChooseBlocks = DoubleDimensionalArrayBool(rows: 100, columns: 100)
     
-    var Blocks: [UIView]!
+//    var Blocks: [UIView]!
     
     //the second view size
     var grayView: UIView!
@@ -41,12 +42,31 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     var swipeRight = UISwipeGestureRecognizer()
     var swipeLeft = UISwipeGestureRecognizer()
     
+    //pan 
+    var pan = UIPanGestureRecognizer()
+    
+    //tap gesture
+    var tapSingleFinger = UITapGestureRecognizer()
+    var tapDoubleFinger = UITapGestureRecognizer()
     
     //test
-    var firstBlockX: Int!
-    var firstBlockY: Int!
-
+    var firstBlockX: Int = -1
+    var firstBlockY: Int = -1
     
+    var secondBlockX: Int = -1
+    var secondBlockY: Int = -1
+    
+    //
+    var sx: CGFloat = 0.0
+    var sy: CGFloat = 0.0
+    var ex: CGFloat = 0.0
+    var ey: CGFloat = 0.0
+    
+    //mark : get the point
+    
+    var flagFirst = Bool()
+    var flagSecond = Bool()
+
 /*
     all the position of the blocks,
     according to the 5.5' screen iPhone6 Plus.
@@ -98,6 +118,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         260.0, 325.0
         325.0, 325.0
 */
+    
     func allBlocksPoint(){
         for index_j in 0...6{
             for index_i in 0...6{
@@ -121,7 +142,6 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
         //Obtain the device's screen size, and Set the blocks's side
         getDevicesSize()
         sizeOfBlocks = CGSize(width: blockLenght, height: blockLenght)
@@ -131,25 +151,23 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         grayView.backgroundColor = UIColor.grayColor()
         view.addSubview(grayView)
         
-        //create the blocks and drap them in the grayview
         allBlocksPoint()
         
         isThereA_Block()
         
+        //create the blocks and drap them in the grayview
         createBlocksToMove(1)
-//        print(Blocks.count)
 
-        
         //call the method: set gesture recognizer attribute
         setGestureAttribute()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     
+    //a method of get the device size
     func getDevicesSize(){
         
         let masterX: CGFloat = getTrueLength(true)
@@ -176,9 +194,9 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
 
                     let view2 = UIView(frame: CGRect(origin: doubleArrayPointBlocks[index_i, index_j], size: sizeOfBlocks))
                     view2.backgroundColor = UIColor.whiteColor()
-                    view2.tag = numOfBlocks + 1
                     
-                    //append the block into Blocks, add use the doubleArrayNumberBlcoks to mark blocks' number(numOfBlocks).
+                    //set the tag for everyone block
+                    view2.tag = numOfBlocks + 1
                     
                     doubleArrayNumberBlcoks[index_i, index_j] = numOfBlocks + 1
     
@@ -187,22 +205,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
                 }
             }
         }
-/*
-        for a in 0..<num{
-            
-            positionOfBlcoks.x = CGFloat(a * 65)
-            
-            let view2 = UIView(frame: CGRect(origin: positionOfBlcoks, size: sizeOfBlocks))
-            view2.backgroundColor = UIColor.whiteColor()
-            
-            grayView.addSubview(view2)
-//            NSLog("aaa")
-        }
-
-*/
     }
-    
-    
     
     /*
         according to the system version to get the real height and lenght
@@ -236,138 +239,532 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         return length;
     }
     
+    
     //TODO: gesture recognizer's attribute
     func setGestureAttribute(){
         
         // default is (2) the number of fingers that must swipe
+        tapSingleFinger.numberOfTouchesRequired = 1
+        tapSingleFinger.numberOfTapsRequired = 1
+        tapSingleFinger.delegate = self
+        tapSingleFinger = UITapGestureRecognizer(target: self, action: Selector("handleSingleFingerEvent:"))
+        self.grayView.addGestureRecognizer(tapSingleFinger)
+        tapSingleFinger.delegate = self
+        
+        
+        tapDoubleFinger.numberOfTouchesRequired = 2
+        tapDoubleFinger.numberOfTapsRequired = 1
+        tapDoubleFinger.delegate = self
+        tapDoubleFinger = UITapGestureRecognizer(target: self, action: Selector("handleDoubleFingerEvent:"))
+        
+        
+        swipeUp.numberOfTouchesRequired = 1
+        swipeDown.numberOfTouchesRequired = 1
+        swipeLeft.numberOfTouchesRequired = 1
+        swipeRight.numberOfTouchesRequired = 1
         
         swipeUp = UISwipeGestureRecognizer(target: self, action: Selector("swipe:"))
         swipeDown = UISwipeGestureRecognizer(target: self, action: Selector("swipe:"))
         swipeLeft = UISwipeGestureRecognizer(target: self, action: Selector("swipe:"))
         swipeRight = UISwipeGestureRecognizer(target: self, action: Selector("swipe:"))
         
+        
         swipeUp.direction = UISwipeGestureRecognizerDirection.Up
         swipeDown.direction = UISwipeGestureRecognizerDirection.Down
         swipeLeft.direction = UISwipeGestureRecognizerDirection.Left
         swipeRight.direction = UISwipeGestureRecognizerDirection.Right
         
+        
         self.grayView.addGestureRecognizer(swipeUp)
         self.grayView.addGestureRecognizer(swipeDown)
         self.grayView.addGestureRecognizer(swipeLeft)
         self.grayView.addGestureRecognizer(swipeRight)
+        
+        swipeUp.enabled = false
+        swipeDown.enabled = false
+        swipeLeft.enabled = false
+        swipeRight.enabled = false
+        
+        swipeUp.delegate = self
+        swipeDown.delegate = self
+        swipeLeft.delegate = self
+        swipeRight.delegate = self
+        
+        
     }
     
-    
+    func checkTheBackground(xx: Int, yy: Int) -> Bool{
+        
+        if doubleArrayBoolBlocks[xx, yy]{
+            return true
+        }
+        return false
+    }
+ 
     //swipe to move the blocks
     func swipe(recognizer: UISwipeGestureRecognizer){
         
-        var selectBlock: UIView
-
         if recognizer == swipeUp{
             
-            selectBlock = judgeBlocksToMove(swipeUp)
-
-            if firstBlockY > 0 && !doubleArrayBoolBlocks[firstBlockX, firstBlockY - 1]{
-                doubleArrayBoolBlocks[firstBlockX, firstBlockY] = false
-                doubleArrayNumberBlcoks[firstBlockX, firstBlockY] = 0
+            if firstBlockY > 0 && secondBlockY > 0{
                 
-                selectBlock.frame.origin.y = selectBlock.frame.origin.y - blockLenght
-                doubleArrayBoolBlocks[firstBlockX, firstBlockY - 1] = true
-                doubleArrayNumberBlcoks[firstBlockX, firstBlockY - 1] = selectBlock.tag
-                print("the \(selectBlock.tag)th move to up")
+                //check and echange, make sure the firstBlock on the move direction's back.
+                if firstBlockY < secondBlockY{
+                    
+//                    exchangeFirstAndSecond(firstBlockX, firY: firstBlockY, sndX: secondBlockX, sndY: secondBlockY)
+                    
+                    let limX = firstBlockX
+                    let limY = firstBlockY
+                    firstBlockX = secondBlockX
+                    firstBlockY = secondBlockY
+                    secondBlockX = limX
+                    secondBlockY = limY
+                    
+                }
+                
+                if firstBlockY - 1 == secondBlockY{
+                    
+                    if !checkTheBackground(secondBlockX, yy: secondBlockY - 1) {
+                        
+                        for selectBlock in grayView.subviews{
 
+                            if selectBlock.tag == doubleArrayNumberBlcoks[secondBlockX, secondBlockY] {
+                                
+                                doubleArrayBoolBlocks[secondBlockX, secondBlockY] = false
+                                doubleArrayNumberBlcoks[secondBlockX, secondBlockY] = 0
+                                doubleArrayBoolBlocks[secondBlockX, secondBlockY - 1] = true
+                                doubleArrayNumberBlcoks[secondBlockX, secondBlockY - 1] = selectBlock.tag
+                                selectBlock.frame.origin.y = selectBlock.frame.origin.y - blockLenght
+                                NSLog("the \(selectBlock.tag)th move to up")
+                            }
+                        }
+                        for selectBlock in grayView.subviews{
+                            
+                            if selectBlock.tag == doubleArrayNumberBlcoks[firstBlockX, firstBlockY] {
+                                
+                                doubleArrayBoolBlocks[firstBlockX, firstBlockY] = false
+                                doubleArrayNumberBlcoks[firstBlockX, firstBlockY] = 0
+                                
+                                selectBlock.frame.origin.y = selectBlock.frame.origin.y - blockLenght
+                                doubleArrayBoolBlocks[firstBlockX, firstBlockY - 1] = true
+                                doubleArrayNumberBlcoks[firstBlockX, firstBlockY - 1] = selectBlock.tag
+                                NSLog("the \(selectBlock.tag)th move to up")
+                            }
+                        }
+                        firstBlockY = firstBlockY - 1
+                        secondBlockY = secondBlockY - 1
+                    }
+                    
+                }else{
+                    
+                    if !checkTheBackground(firstBlockX, yy: firstBlockY - 1) && !checkTheBackground(secondBlockX, yy: secondBlockY - 1){
+                        
+                        for selectBlock in grayView.subviews{
+                            
+
+                            if selectBlock.tag == doubleArrayNumberBlcoks[secondBlockX, secondBlockY] {
+                                
+                                doubleArrayBoolBlocks[secondBlockX, secondBlockY] = false
+                                doubleArrayNumberBlcoks[secondBlockX, secondBlockY] = 0
+                                
+                                selectBlock.frame.origin.y = selectBlock.frame.origin.y - blockLenght
+                                
+                                doubleArrayBoolBlocks[secondBlockX, secondBlockY - 1] = true
+                                doubleArrayNumberBlcoks[secondBlockX, secondBlockY - 1] = selectBlock.tag
+                                NSLog("the \(selectBlock.tag)th move to up")
+                            }
+                            if selectBlock.tag == doubleArrayNumberBlcoks[firstBlockX, firstBlockY] {
+                                
+                                doubleArrayBoolBlocks[firstBlockX, firstBlockY] = false
+                                doubleArrayNumberBlcoks[firstBlockX, firstBlockY] = 0
+                                
+                                selectBlock.frame.origin.y = selectBlock.frame.origin.y - blockLenght
+                                
+                                doubleArrayBoolBlocks[firstBlockX, firstBlockY - 1] = true
+                                doubleArrayNumberBlcoks[firstBlockX, firstBlockY - 1] = selectBlock.tag
+                                NSLog("the \(selectBlock.tag)th move to up")
+                            }
+                        }
+                        firstBlockY = firstBlockY - 1
+                        secondBlockY = secondBlockY - 1
+                    }
+                }
             }
             
         }else if recognizer == swipeDown{
-
-            selectBlock = judgeBlocksToMove(swipeDown)
-            if firstBlockY < 5 && !doubleArrayBoolBlocks[firstBlockX, firstBlockY + 1]{
-                doubleArrayBoolBlocks[firstBlockX, firstBlockY] = false
-                doubleArrayNumberBlcoks[firstBlockX, firstBlockY] = 0
+            
+            if firstBlockY < 5 && secondBlockY < 5{
                 
-                selectBlock.frame.origin.y = selectBlock.frame.origin.y + blockLenght
-                doubleArrayBoolBlocks[firstBlockX, firstBlockY + 1] = true
-                doubleArrayNumberBlcoks[firstBlockX, firstBlockY + 1] = selectBlock.tag
-                print("the \(selectBlock.tag)th move to down")
+                //check and echange, make sure the firstBlock on the move direction's back.
+                if firstBlockY > secondBlockY{
+                    
+                    let limX = firstBlockX
+                    let limY = firstBlockY
+                    firstBlockX = secondBlockX
+                    firstBlockY = secondBlockY
+                    secondBlockX = limX
+                    secondBlockY = limY
+                    
+                }
+                
+                if firstBlockY + 1 == secondBlockY{
+                    
+                    if !checkTheBackground(secondBlockX, yy: secondBlockY + 1){
+                        
+                        for selectBlock in grayView.subviews{
 
+                            if selectBlock.tag == doubleArrayNumberBlcoks[secondBlockX, secondBlockY] {
+                                
+                                NSLog("the \(selectBlock.tag)th move to down")
+                                doubleArrayBoolBlocks[secondBlockX, secondBlockY] = false
+                                doubleArrayNumberBlcoks[secondBlockX, secondBlockY] = 0
+                                
+                                selectBlock.frame.origin.y = selectBlock.frame.origin.y + blockLenght
+                                doubleArrayBoolBlocks[secondBlockX, secondBlockY + 1] = true
+                                doubleArrayNumberBlcoks[secondBlockX, secondBlockY + 1] = selectBlock.tag
+                                
+                            }
+                        }
+                        for selectBlock in grayView.subviews{
+                            
+                            if selectBlock.tag == doubleArrayNumberBlcoks[firstBlockX, firstBlockY] {
+                                
+                                NSLog("the \(selectBlock.tag)th move to down")
+                                doubleArrayBoolBlocks[firstBlockX, firstBlockY] = false
+                                doubleArrayNumberBlcoks[firstBlockX, firstBlockY] = 0
+                                
+                                selectBlock.frame.origin.y = selectBlock.frame.origin.y + blockLenght
+                                doubleArrayBoolBlocks[firstBlockX, firstBlockY + 1] = true
+                                doubleArrayNumberBlcoks[firstBlockX, firstBlockY + 1] = selectBlock.tag
+                                
+                            }
+                        }
+                        firstBlockY = firstBlockY + 1
+                        secondBlockY = secondBlockY + 1
+                    }
+                    
+                }else{
+                    if !checkTheBackground(firstBlockX, yy: firstBlockY + 1) && !checkTheBackground(secondBlockX, yy: secondBlockY + 1){
+                        
+                        for selectBlock in grayView.subviews{
+                            
+                            if selectBlock.tag == doubleArrayNumberBlcoks[firstBlockX, firstBlockY] {
+                                
+                                doubleArrayBoolBlocks[firstBlockX, firstBlockY] = false
+                                doubleArrayNumberBlcoks[firstBlockX, firstBlockY] = 0
+                                
+                                selectBlock.frame.origin.y = selectBlock.frame.origin.y + blockLenght
+                                doubleArrayBoolBlocks[firstBlockX, firstBlockY + 1] = true
+                                doubleArrayNumberBlcoks[firstBlockX, firstBlockY + 1] = selectBlock.tag
+                                NSLog("the \(selectBlock.tag)th move to down")
+                            }
+                            if selectBlock.tag == doubleArrayNumberBlcoks[secondBlockX, secondBlockY] {
+                                
+                                doubleArrayBoolBlocks[secondBlockX, secondBlockY] = false
+                                doubleArrayNumberBlcoks[secondBlockX, secondBlockY] = 0
+                                
+                                selectBlock.frame.origin.y = selectBlock.frame.origin.y + blockLenght
+                                doubleArrayBoolBlocks[secondBlockX, secondBlockY + 1] = true
+                                doubleArrayNumberBlcoks[secondBlockX, secondBlockY + 1] = selectBlock.tag
+                                NSLog("the \(selectBlock.tag)th move to down")
+                            }
+                        }
+                        firstBlockY = firstBlockY + 1
+                        secondBlockY = secondBlockY + 1
+                    }
+                }
             }
             
         }else if recognizer == swipeRight{
             
-            selectBlock = judgeBlocksToMove(swipeRight)
-            if firstBlockX < 5 && !doubleArrayBoolBlocks[firstBlockX + 1, firstBlockY]{
+            if firstBlockX < 5 && secondBlockX < 5{
                 
-                doubleArrayBoolBlocks[firstBlockX, firstBlockY] = false
-                doubleArrayNumberBlcoks[firstBlockX, firstBlockY] = 0
+                if firstBlockX > secondBlockX{
+                    
+                    let limX = firstBlockX
+                    let limY = firstBlockY
+                    firstBlockX = secondBlockX
+                    firstBlockY = secondBlockY
+                    secondBlockX = limX
+                    secondBlockY = limY
+                    
+                }
+                
+                if firstBlockX + 1 == secondBlockX{
+                    
+                    if !checkTheBackground(secondBlockX + 1, yy: secondBlockY){
+                        
+                        for selectBlock in grayView.subviews{
+                            
+                            if selectBlock.tag == doubleArrayNumberBlcoks[secondBlockX, secondBlockY] {
+                                doubleArrayBoolBlocks[secondBlockX, secondBlockY] = false
+                                doubleArrayNumberBlcoks[secondBlockX, secondBlockY] = 0
+                                
+                                selectBlock.frame.origin.x = selectBlock.frame.origin.x + blockLenght
+                                doubleArrayBoolBlocks[secondBlockX + 1, secondBlockY] = true
+                                doubleArrayNumberBlcoks[secondBlockX + 1, secondBlockY] = selectBlock.tag
+                                NSLog("the \(selectBlock.tag)th move to right")
 
-                selectBlock.frame.origin.x = selectBlock.frame.origin.x + blockLenght
-                doubleArrayBoolBlocks[firstBlockX + 1, firstBlockY] = true
-                doubleArrayNumberBlcoks[firstBlockX + 1, firstBlockY] = selectBlock.tag
-                print("the \(selectBlock.tag)th move to right")
+                            }
+                        }
+                        for selectBlock in grayView.subviews{
+                            
+                            if selectBlock.tag == doubleArrayNumberBlcoks[firstBlockX, firstBlockY] {
+                                
+                                doubleArrayBoolBlocks[firstBlockX, firstBlockY] = false
+                                doubleArrayNumberBlcoks[firstBlockX, firstBlockY] = 0
+                                
+                                selectBlock.frame.origin.x = selectBlock.frame.origin.x + blockLenght
+                                doubleArrayBoolBlocks[firstBlockX + 1, firstBlockY] = true
+                                doubleArrayNumberBlcoks[firstBlockX + 1, firstBlockY] = selectBlock.tag
+                                NSLog("the \(selectBlock.tag)th move to right")
+                            }
+                        }
+                        firstBlockX = firstBlockX + 1
+                        secondBlockX = secondBlockX + 1
+                    }
+                    
+                }else{
+                    
+                    if !checkTheBackground(firstBlockX + 1, yy: firstBlockY) && !checkTheBackground(secondBlockX + 1, yy: secondBlockY){
+                        
+                        for selectBlock in grayView.subviews{
+                            
+                            if selectBlock.tag == doubleArrayNumberBlcoks[firstBlockX, firstBlockY] {
+                                
+                                doubleArrayBoolBlocks[firstBlockX, firstBlockY] = false
+                                doubleArrayNumberBlcoks[firstBlockX, firstBlockY] = 0
+                                
+                                selectBlock.frame.origin.x = selectBlock.frame.origin.x + blockLenght
+                                doubleArrayBoolBlocks[firstBlockX + 1, firstBlockY] = true
+                                doubleArrayNumberBlcoks[firstBlockX + 1, firstBlockY] = selectBlock.tag
+                                NSLog("the \(selectBlock.tag)th move to right")
+                            }
+                            if selectBlock.tag == doubleArrayNumberBlcoks[secondBlockX, secondBlockY] {
+                                
+                                doubleArrayBoolBlocks[secondBlockX, secondBlockY] = false
+                                doubleArrayNumberBlcoks[secondBlockX, secondBlockY] = 0
+                                
+                                selectBlock.frame.origin.x = selectBlock.frame.origin.x + blockLenght
+                                doubleArrayBoolBlocks[secondBlockX + 1, secondBlockY] = true
+                                doubleArrayNumberBlcoks[secondBlockX + 1, secondBlockY] = selectBlock.tag
+                                NSLog("the \(selectBlock.tag)th move to right")
+                            }
+                        }
+                        firstBlockX = firstBlockX + 1
+                        secondBlockX = secondBlockX + 1
+                    }
+                }
             }
         }else if recognizer == swipeLeft{
-
-            selectBlock = judgeBlocksToMove(swipeLeft)
-            if firstBlockX > 0 && !doubleArrayBoolBlocks[firstBlockX - 1, firstBlockY]{
-                doubleArrayBoolBlocks[firstBlockX, firstBlockY] = false
-                doubleArrayNumberBlcoks[firstBlockX, firstBlockY] = 0
-                selectBlock.frame.origin.x = selectBlock.frame.origin.x - blockLenght
+            
+            if firstBlockX > 0 && secondBlockX > 0{
                 
-                doubleArrayBoolBlocks[firstBlockX - 1, firstBlockY] = true
-                doubleArrayNumberBlcoks[firstBlockX - 1, firstBlockY] = selectBlock.tag
-                print("the \(selectBlock.tag)th move to left")
-
-            }
-        }
-        
-    }
-    
-    
-    //judge the block which you want to move, 2 blocks together
-    func judgeBlocksToMove(recognizer: UISwipeGestureRecognizer) -> UIView{
-        
-        let firstBlcok: UIView = UIView()
-
-        
-        let swipeStartPoint = recognizer.locationInView(self.grayView)
-        let sx = swipeStartPoint.x
-        let sy = swipeStartPoint.y
-        
-//        for index_i in 0...5{
-//            for index_j in 0...5{
-//                let contrastStart = doubleArrayPointBlocks[index_i, index_j]
-//                let contrastEnd = doubleArrayPointBlocks[index_i + 1, index_j + 1]
-//            }
-//        }
-        for index_i in 0...5{
-            for index_j in 0...5{
+                //check and echange, make sure the firstBlock on the move direction's back.
+                if firstBlockX < secondBlockX{
+                    
+                    let limX = firstBlockX
+                    let limY = firstBlockY
+                    firstBlockX = secondBlockX
+                    firstBlockY = secondBlockY
+                    secondBlockX = limX
+                    secondBlockY = limY
+                }
                 
-                if doubleArrayBoolBlocks[index_i, index_j]{
+                if firstBlockX - 1 == secondBlockX{
                     
-                    let contrastStart = doubleArrayPointBlocks[index_i, index_j]
-                    let contrastEnd = doubleArrayPointBlocks[index_i + 1, index_j + 1]
-                    
-                    if sx >= contrastStart.x && sx <= contrastEnd.x && sy >= contrastStart.y && sy <= contrastEnd.y{
+                    if !checkTheBackground(secondBlockX - 1, yy: secondBlockY){
                         
-                        firstBlockX = index_i
-                        firstBlockY = index_j
-                        break
+                        for selectBlock in grayView.subviews{
+                            
+                            if selectBlock.tag == doubleArrayNumberBlcoks[secondBlockX, secondBlockY]{
+                                
+                                doubleArrayBoolBlocks[secondBlockX, secondBlockY] = false
+                                doubleArrayNumberBlcoks[secondBlockX, secondBlockY] = 0
+                                
+                                selectBlock.frame.origin.x = selectBlock.frame.origin.x - blockLenght
+                                
+                                doubleArrayBoolBlocks[secondBlockX - 1,secondBlockY] = true
+                                doubleArrayNumberBlcoks[secondBlockX - 1, secondBlockY] = selectBlock.tag
+                                NSLog("the \(selectBlock.tag)th move to left")
+                            }
+                        }
+                        for selectBlock in grayView.subviews{
+                            
+                            if selectBlock.tag == doubleArrayNumberBlcoks[firstBlockX, firstBlockY] {
+                                
+                                doubleArrayBoolBlocks[firstBlockX, firstBlockY] = false
+                                doubleArrayNumberBlcoks[firstBlockX, firstBlockY] = 0
+                                selectBlock.frame.origin.x = selectBlock.frame.origin.x - blockLenght
+                                
+                                doubleArrayBoolBlocks[firstBlockX - 1, firstBlockY] = true
+                                doubleArrayNumberBlcoks[firstBlockX - 1, firstBlockY] = selectBlock.tag
+                                NSLog("the \(selectBlock.tag)th move to left")
+                            }
+                        }
+                        firstBlockX = firstBlockX - 1
+                        secondBlockX = secondBlockX - 1
+                    }
+                    
+                }else{
+                    
+                    if !checkTheBackground(firstBlockX - 1, yy: firstBlockY) && !checkTheBackground(secondBlockX - 1, yy: secondBlockY){
+                        
+                        for selectBlock in grayView.subviews{
+                            if selectBlock.tag == doubleArrayNumberBlcoks[firstBlockX, firstBlockY] {
+                                
+                                doubleArrayBoolBlocks[firstBlockX, firstBlockY] = false
+                                doubleArrayNumberBlcoks[firstBlockX, firstBlockY] = 0
+                                selectBlock.frame.origin.x = selectBlock.frame.origin.x - blockLenght
+                                
+                                doubleArrayBoolBlocks[firstBlockX - 1, firstBlockY] = true
+                                doubleArrayNumberBlcoks[firstBlockX - 1, firstBlockY] = selectBlock.tag
+                                NSLog("the \(selectBlock.tag)th move to left")
+                            }
+                            
+                            if selectBlock.tag == doubleArrayNumberBlcoks[secondBlockX, secondBlockY]{
+                                
+                                doubleArrayBoolBlocks[secondBlockX, secondBlockY] = false
+                                doubleArrayNumberBlcoks[secondBlockX, secondBlockY] = 0
+                                
+                                selectBlock.frame.origin.x = selectBlock.frame.origin.x - blockLenght
+                                
+                                doubleArrayBoolBlocks[secondBlockX - 1,secondBlockY] = true
+                                doubleArrayNumberBlcoks[secondBlockX - 1, secondBlockY] = selectBlock.tag
+                                NSLog("the \(selectBlock.tag)th move to left")
+                            }
+                        }
+                        firstBlockX = firstBlockX - 1
+                        secondBlockX = secondBlockX - 1
                     }
                 }
             }
         }
-        
-//        firstBlcok = Blocks[doubleArrayNumberBlcoks[firstBlockX, firstBlockY]]
-        
-        //check all blcoks' tag, if it is equal the doubleArrayNumberBlcoks' value, return current block
-        for limView in grayView.subviews{
-            if limView.tag == doubleArrayNumberBlcoks[firstBlockX, firstBlockY]{
-                return limView
-            }
-        }
-
-        return firstBlcok
     }
 
+    //FIXME: choose the same blocks should not be allowed......
+    func handleSingleFingerEvent(recognizer: UITapGestureRecognizer){
+        
+        if recognizer.numberOfTapsRequired == 1{
+            
+            let firstPoint:CGPoint!
+            let secondPoint: CGPoint!
+            
+            if flagFirst && !flagSecond{
+                secondPoint = recognizer.locationInView(self.grayView)
+                
+                ex = secondPoint.x
+                ey = secondPoint.y
+                
+                var limBool: Bool = false
+
+                //make sure the block had been choosed.
+                for index_i in 0...5{
+                    for index_j in 0...5{
+                        
+                        if doubleArrayBoolBlocks[index_i, index_j]{
+                            
+                            let contrastStart = doubleArrayPointBlocks[index_i, index_j]
+                            let contrastEnd = doubleArrayPointBlocks[index_i + 1, index_j + 1]
+                            if ex >= contrastStart.x && ex <= contrastEnd.x && ey >= contrastStart.y && ey <= contrastEnd.y{
+                                
+                                secondBlockX = index_i
+                                secondBlockY = index_j
+                                
+                                limBool = true
+                            }
+                        }
+                    }
+                }
+                if !doubleArrayChooseBlocks[secondBlockX, secondBlockY] && limBool{
+                    
+                    if doubleArrayBoolBlocks[secondBlockX, secondBlockY]{
+                        flagSecond = true
+                        print("second, \(ex), \(ey)")
+                    }
+                }
+            }
+            if !flagFirst{
+                
+                var limBool: Bool = false
+                
+                firstPoint = recognizer.locationInView(self.grayView)
+                sx = firstPoint.x
+                sy = firstPoint.y
+                
+                for index_i in 0...5{
+                    for index_j in 0...5{
+                        
+                        if doubleArrayBoolBlocks[index_i, index_j]{
+                            
+                            let contrastStart = doubleArrayPointBlocks[index_i, index_j]
+                            let contrastEnd = doubleArrayPointBlocks[index_i + 1, index_j + 1]
+                            if sx >= contrastStart.x && sx <= contrastEnd.x && sy >= contrastStart.y && sy <= contrastEnd.y{
+                                
+                                firstBlockX = index_i
+                                firstBlockY = index_j
+                                limBool = true
+                            }
+                        }
+                    }
+                }
+                
+                if limBool{
+                    if doubleArrayBoolBlocks[firstBlockX,firstBlockY]{
+                        doubleArrayChooseBlocks[firstBlockX, firstBlockY] = true
+                        flagFirst = true
+                        print("first, \(sx), \(sy)")
+                    }
+                }
+            }
+            
+            //MARK: get the firstBlock and secondBlock
+            if flagFirst && flagSecond{
+                
+                recognizer.numberOfTapsRequired = 2
+                
+                swipeUp.enabled = true
+                swipeDown.enabled = true
+                swipeLeft.enabled = true
+                swipeRight.enabled = true
+                
+                doubleArrayChooseBlocks[firstBlockX, firstBlockY] = false
+            }
+        }
+            
+        else if recognizer.numberOfTapsRequired == 2{
+            
+            recognizer.numberOfTapsRequired = 1
+            
+            swipeUp.enabled = false
+            swipeDown.enabled = false
+            swipeLeft.enabled = false
+            swipeRight.enabled = false
+            
+            flagFirst = false
+            flagSecond = false
+            
+            NSLog("rechoose")
+            
+//            firstBlockX = -1
+//            firstBlockY = -1
+//            secondBlockX = -1
+//            secondBlockY = -1
+            
+//            sx = 0.0
+//            sy = 0.0
+//            ex = 0.0
+//            ey = 0.0
+        }
+    }
+    
+    func handleDoubleFingerEvent(recognizer: UITapGestureRecognizer){
+        
+        if recognizer.numberOfTapsRequired == 1{
+            
+        }else if recognizer.numberOfTapsRequired == 2{
+            
+        }
+    }
 }
 
