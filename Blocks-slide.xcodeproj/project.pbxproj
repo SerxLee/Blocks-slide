@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9B73F6351C97D55C001721B7 /* chooseLevelTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B73F6341C97D55C001721B7 /* chooseLevelTableViewController.swift */; };
+		9B73F6391C98288B001721B7 /* Level.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B73F6381C98288B001721B7 /* Level.swift */; };
 		9BFBC8321C900BB600723611 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BFBC8311C900BB600723611 /* AppDelegate.swift */; };
 		9BFBC8341C900BB600723611 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BFBC8331C900BB600723611 /* ViewController.swift */; };
 		9BFBC8371C900BB600723611 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9BFBC8351C900BB600723611 /* Main.storyboard */; };
@@ -36,6 +38,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9B73F6341C97D55C001721B7 /* chooseLevelTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = chooseLevelTableViewController.swift; sourceTree = "<group>"; };
+		9B73F6381C98288B001721B7 /* Level.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Level.swift; sourceTree = "<group>"; };
 		9BFBC82E1C900BB600723611 /* Blocks-slide.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Blocks-slide.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9BFBC8311C900BB600723611 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9BFBC8331C900BB600723611 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -103,12 +107,14 @@
 			children = (
 				9BFBC8311C900BB600723611 /* AppDelegate.swift */,
 				9BFBC8331C900BB600723611 /* ViewController.swift */,
+				9B73F6341C97D55C001721B7 /* chooseLevelTableViewController.swift */,
+				9BFBC85F1C919B7600723611 /* DoubleDimensionalArray.swift */,
+				9BFBC8611C91B04900723611 /* BlocksModle.swift */,
 				9BFBC8351C900BB600723611 /* Main.storyboard */,
 				9BFBC8381C900BB600723611 /* Assets.xcassets */,
 				9BFBC83A1C900BB600723611 /* LaunchScreen.storyboard */,
 				9BFBC83D1C900BB600723611 /* Info.plist */,
-				9BFBC85F1C919B7600723611 /* DoubleDimensionalArray.swift */,
-				9BFBC8611C91B04900723611 /* BlocksModle.swift */,
+				9B73F6381C98288B001721B7 /* Level.swift */,
 			);
 			path = "Blocks-slide";
 			sourceTree = "<group>";
@@ -265,6 +271,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9B73F6391C98288B001721B7 /* Level.swift in Sources */,
+				9B73F6351C97D55C001721B7 /* chooseLevelTableViewController.swift in Sources */,
 				9BFBC8601C919B7600723611 /* DoubleDimensionalArray.swift in Sources */,
 				9BFBC8341C900BB600723611 /* ViewController.swift in Sources */,
 				9BFBC8321C900BB600723611 /* AppDelegate.swift in Sources */,
@@ -495,6 +503,7 @@
 				9BFBC8581C900BB600723611 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		9BFBC8591C900BB600723611 /* Build configuration list for PBXNativeTarget "Blocks-slideTests" */ = {
 			isa = XCConfigurationList;
@@ -503,6 +512,7 @@
 				9BFBC85B1C900BB600723611 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		9BFBC85C1C900BB600723611 /* Build configuration list for PBXNativeTarget "Blocks-slideUITests" */ = {
 			isa = XCConfigurationList;
@@ -511,6 +521,7 @@
 				9BFBC85E1C900BB600723611 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
