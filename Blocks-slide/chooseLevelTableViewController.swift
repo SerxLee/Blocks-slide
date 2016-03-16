@@ -7,8 +7,12 @@
 //
 
 import UIKit
+import CoreData
+
 
 class chooseLevelTableViewController: UITableViewController {
+    
+    var managerContext: NSManagedObjectContext!
     
     let levelComplexity = ["level 1", "level 2"]
     
@@ -41,8 +45,11 @@ class chooseLevelTableViewController: UITableViewController {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
         if segue.identifier == "levelToGame"{
-            let controllerview = segue.destinationViewController as! ViewController
-            controllerview.level = sender as! Int
+            let controllerview = segue.destinationViewController as! UINavigationController
+            let nextController = controllerview.topViewController as! ViewController
+            
+            nextController.level = sender as! Int
+            nextController.managedContext = managerContext
             NSLog("segue")
         }
     }

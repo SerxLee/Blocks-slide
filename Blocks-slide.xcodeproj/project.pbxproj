@@ -8,7 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		9B73F6351C97D55C001721B7 /* chooseLevelTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B73F6341C97D55C001721B7 /* chooseLevelTableViewController.swift */; };
-		9B73F6391C98288B001721B7 /* Level.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B73F6381C98288B001721B7 /* Level.swift */; };
+		9B73F63D1C986767001721B7 /* MenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B73F63C1C986767001721B7 /* MenuController.swift */; };
+		9B73F6401C98CFFE001721B7 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B73F63F1C98CFFE001721B7 /* CoreDataStack.swift */; };
+		9B73F67D1C991463001721B7 /* MarkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B73F67C1C991463001721B7 /* MarkViewController.swift */; };
+		9B73F6801C9956E4001721B7 /* Mark.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9B73F67E1C9956E4001721B7 /* Mark.xcdatamodeld */; };
+		9B73F6951C996320001721B7 /* Mark+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B73F6931C996320001721B7 /* Mark+CoreDataProperties.swift */; };
+		9B73F6961C996320001721B7 /* Mark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B73F6941C996320001721B7 /* Mark.swift */; };
 		9BFBC8321C900BB600723611 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BFBC8311C900BB600723611 /* AppDelegate.swift */; };
 		9BFBC8341C900BB600723611 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BFBC8331C900BB600723611 /* ViewController.swift */; };
 		9BFBC8371C900BB600723611 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9BFBC8351C900BB600723611 /* Main.storyboard */; };
@@ -39,7 +44,12 @@
 
 /* Begin PBXFileReference section */
 		9B73F6341C97D55C001721B7 /* chooseLevelTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = chooseLevelTableViewController.swift; sourceTree = "<group>"; };
-		9B73F6381C98288B001721B7 /* Level.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Level.swift; sourceTree = "<group>"; };
+		9B73F63C1C986767001721B7 /* MenuController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuController.swift; sourceTree = "<group>"; };
+		9B73F63F1C98CFFE001721B7 /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
+		9B73F67C1C991463001721B7 /* MarkViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarkViewController.swift; sourceTree = "<group>"; };
+		9B73F67F1C9956E4001721B7 /* Mark.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Mark.xcdatamodel; sourceTree = "<group>"; };
+		9B73F6931C996320001721B7 /* Mark+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Mark+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		9B73F6941C996320001721B7 /* Mark.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mark.swift; sourceTree = "<group>"; };
 		9BFBC82E1C900BB600723611 /* Blocks-slide.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Blocks-slide.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9BFBC8311C900BB600723611 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9BFBC8331C900BB600723611 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -82,6 +92,48 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9B73F63A1C986655001721B7 /* game_ing */ = {
+			isa = PBXGroup;
+			children = (
+				9BFBC8331C900BB600723611 /* ViewController.swift */,
+				9BFBC85F1C919B7600723611 /* DoubleDimensionalArray.swift */,
+				9BFBC8611C91B04900723611 /* BlocksModle.swift */,
+			);
+			name = game_ing;
+			sourceTree = "<group>";
+		};
+		9B73F63B1C9866A9001721B7 /* game_before */ = {
+			isa = PBXGroup;
+			children = (
+				9B73F63C1C986767001721B7 /* MenuController.swift */,
+				9B73F6341C97D55C001721B7 /* chooseLevelTableViewController.swift */,
+				9B73F67C1C991463001721B7 /* MarkViewController.swift */,
+				9BFBC8311C900BB600723611 /* AppDelegate.swift */,
+				9BFBC83D1C900BB600723611 /* Info.plist */,
+			);
+			name = game_before;
+			sourceTree = "<group>";
+		};
+		9B73F63E1C98CFC4001721B7 /* data */ = {
+			isa = PBXGroup;
+			children = (
+				9B73F6931C996320001721B7 /* Mark+CoreDataProperties.swift */,
+				9B73F6941C996320001721B7 /* Mark.swift */,
+				9B73F63F1C98CFFE001721B7 /* CoreDataStack.swift */,
+				9B73F67E1C9956E4001721B7 /* Mark.xcdatamodeld */,
+			);
+			name = data;
+			sourceTree = "<group>";
+		};
+		9B73F6411C98D525001721B7 /* interface */ = {
+			isa = PBXGroup;
+			children = (
+				9BFBC8351C900BB600723611 /* Main.storyboard */,
+				9BFBC83A1C900BB600723611 /* LaunchScreen.storyboard */,
+			);
+			name = interface;
+			sourceTree = "<group>";
+		};
 		9BFBC8251C900BB500723611 = {
 			isa = PBXGroup;
 			children = (
@@ -105,16 +157,11 @@
 		9BFBC8301C900BB600723611 /* Blocks-slide */ = {
 			isa = PBXGroup;
 			children = (
-				9BFBC8311C900BB600723611 /* AppDelegate.swift */,
-				9BFBC8331C900BB600723611 /* ViewController.swift */,
-				9B73F6341C97D55C001721B7 /* chooseLevelTableViewController.swift */,
-				9BFBC85F1C919B7600723611 /* DoubleDimensionalArray.swift */,
-				9BFBC8611C91B04900723611 /* BlocksModle.swift */,
-				9BFBC8351C900BB600723611 /* Main.storyboard */,
+				9B73F6411C98D525001721B7 /* interface */,
+				9B73F63E1C98CFC4001721B7 /* data */,
+				9B73F63B1C9866A9001721B7 /* game_before */,
+				9B73F63A1C986655001721B7 /* game_ing */,
 				9BFBC8381C900BB600723611 /* Assets.xcassets */,
-				9BFBC83A1C900BB600723611 /* LaunchScreen.storyboard */,
-				9BFBC83D1C900BB600723611 /* Info.plist */,
-				9B73F6381C98288B001721B7 /* Level.swift */,
 			);
 			path = "Blocks-slide";
 			sourceTree = "<group>";
@@ -271,11 +318,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9B73F6391C98288B001721B7 /* Level.swift in Sources */,
+				9B73F6401C98CFFE001721B7 /* CoreDataStack.swift in Sources */,
 				9B73F6351C97D55C001721B7 /* chooseLevelTableViewController.swift in Sources */,
 				9BFBC8601C919B7600723611 /* DoubleDimensionalArray.swift in Sources */,
 				9BFBC8341C900BB600723611 /* ViewController.swift in Sources */,
+				9B73F6801C9956E4001721B7 /* Mark.xcdatamodeld in Sources */,
 				9BFBC8321C900BB600723611 /* AppDelegate.swift in Sources */,
+				9B73F6951C996320001721B7 /* Mark+CoreDataProperties.swift in Sources */,
+				9B73F67D1C991463001721B7 /* MarkViewController.swift in Sources */,
+				9B73F6961C996320001721B7 /* Mark.swift in Sources */,
+				9B73F63D1C986767001721B7 /* MenuController.swift in Sources */,
 				9BFBC8621C91B04900723611 /* BlocksModle.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -524,6 +576,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		9B73F67E1C9956E4001721B7 /* Mark.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				9B73F67F1C9956E4001721B7 /* Mark.xcdatamodel */,
+			);
+			currentVersion = 9B73F67F1C9956E4001721B7 /* Mark.xcdatamodel */;
+			path = Mark.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 9BFBC8261C900BB500723611 /* Project object */;
 }

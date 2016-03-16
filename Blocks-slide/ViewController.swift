@@ -13,6 +13,7 @@
 
 import UIKit
 import Foundation
+import CoreData
 
 
 public class ViewController: UIViewController, UIGestureRecognizerDelegate {
@@ -103,6 +104,40 @@ public class ViewController: UIViewController, UIGestureRecognizerDelegate {
     var flagFirst = Bool()
     var flagSecond = Bool()
     
+    
+    //MARK: coreData
+    var managedContext: NSManagedObjectContext!
+    
+    var markEntity: NSEntityDescription!
+    var markFetch: NSFetchRequest!
+    
+    //the data get from the coreData, the first of the result dictionatry.
+    var resultOfMark: NSDictionary!
+
+    
+    var markOfNow: Int = 0
+    
+    
+    //the method is link the database and get the data.
+    func coreDataInit(){
+        
+        markEntity = NSEntityDescription.entityForName("Mark", inManagedObjectContext: managedContext)
+        markFetch = NSFetchRequest(entityName: "Mark")
+        
+        do {
+            
+            let result =
+                try managedContext.executeFetchRequest(markFetch) as! [NSDictionary]
+            
+            if result.count > 0{
+                resultOfMark = result.first
+            }
+            
+        }catch let error as NSError{
+            print("Error: \(error) " +
+                "description \(error.localizedDescription)")
+        }
+    }
 
     
     func allBlocksPoint(){
@@ -145,11 +180,6 @@ public class ViewController: UIViewController, UIGestureRecognizerDelegate {
         getDevicesSize()
         add()
         
-        //MARK:grayview handing all the blocks
-        grayView = UIView(frame: CGRect(x: 12.0, y: 82.0, width: grayViewLenght, height: grayViewHeight))
-        grayView.backgroundColor = UIColor.whiteColor()
-        view.addSubview(grayView)
-        
         allBlocksPoint()
         
         isThereA_Block()
@@ -169,16 +199,27 @@ public class ViewController: UIViewController, UIGestureRecognizerDelegate {
     //a method of get the device size
     func getDevicesSize(){
         
+        let calculateBound: CGFloat = 0.058
+        
         let masterX: CGFloat = getTrueLength(true)
         let masterY: CGFloat = getTrueLength(false)
 
-        grayViewLenght = masterX - 24.0
+        let boundWide = masterX * calculateBound
+        
+        grayViewLenght = masterX - boundWide
         grayViewHeight = grayViewLenght
         
         blockLenght = grayViewLenght / 6
         
         sizeOfBlocks = CGSize(width: blockLenght, height: blockLenght)
 
+        let pointOfBackground = CGPoint(x: boundWide / 2, y: masterY - grayViewHeight - masterY / 6)
+        let sizeOfBackground = CGSize(width: grayViewLenght, height: grayViewHeight)
+        
+        //MARK:grayview handing all the blocks
+        grayView = UIView(frame: CGRect(origin: pointOfBackground, size: sizeOfBackground))
+        grayView.backgroundColor = UIColor.whiteColor()
+        view.addSubview(grayView)
         
         print(masterX)
         print(masterY)
